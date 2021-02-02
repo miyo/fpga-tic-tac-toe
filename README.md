@@ -15,6 +15,7 @@ ACRiの環境を使って作業することを想定しています。ACRiの環
 
 1. [ACRi登録ページ](https://gw.acri.c.titech.ac.jp/wp/registration)にアクセスしてアカウント登録をしてください。アカウント作成には１週間程度かかります。
 1. [ACRiルームにログインしよう](https://www.youtube.com/watch?v=TKKqUrbmVr4)と[ACRi ルームの FPGA 利用環境の予約・使用方法](https://gw.acri.c.titech.ac.jp/wp/manual/how-to-reserve)をご覧いただき、サーバーにログインできることを確認しておいてください。
+1. <推奨> [ACRiルームでArtyを使ってみよう](https://www.youtube.com/watch?v=PcvWGNl7ZGY)と[サーバで Vivado と Vitis (または SDK) を使用する](https://gw.acri.c.titech.ac.jp/wp/manual/vivado-vitis)をご覧いただきツールの基本的な動作を確認してみてください（ここから、当日取り組んでいただいても構いません）。
 
 ## FPGA開発の一通りの流れを体験
 
