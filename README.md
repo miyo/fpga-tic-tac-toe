@@ -9,6 +9,13 @@
 
 ACRiの開発環境を使って試せます
 
+## 事前準備
+
+ACRiの環境を使って作業することを想定しています。ACRiの環境を利用できるように以下の事前準備をお願いします。
+
+1. [ACRi登録ページ](https://gw.acri.c.titech.ac.jp/wp/registration)にアクセスしてアカウント登録をしてください。アカウント作成には１週間程度かかります。
+1. [ACRiルームにログインしよう](https://www.youtube.com/watch?v=TKKqUrbmVr4)と[ACRi ルームの FPGA 利用環境の予約・使用方法](https://gw.acri.c.titech.ac.jp/wp/manual/how-to-reserve)をご覧いただき、サーバーにログインできることを確認しておいてください。
+
 ## FPGA開発の一通りの流れを体験
 
 FPGAを動かすまでの一通りの手順を体験しましょう。
