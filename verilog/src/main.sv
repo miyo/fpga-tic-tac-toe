@@ -205,7 +205,7 @@ module main
 		.valid(make_turn_valid),
 		.error(make_turn_error)
 		);
-    assign make_turn_target_a = ~my_target_a;
+    assign make_turn_target_a = my_target_a;
     /////////////////////////////////////////////////////////////////////////
 
 

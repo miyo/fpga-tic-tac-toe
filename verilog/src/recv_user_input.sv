@@ -23,7 +23,7 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
      input wire uart_ready 
      );
 
-    enum {IDLE, PROMPT, RECV0, RECV1, GET_INDEX, EMIT} state;
+    enum {IDLE, PROMPT0, RECV0, PROMPT1, RECV1, GET_INDEX, EMIT, CR, LF} state;
     logic busy;
     logic target_a_r;
     logic [7:0] col, row; // 入力された列・行の保存用
@@ -31,6 +31,8 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 
     logic [COLS*ROWS-1:0] board_a_r;
     logic [COLS*ROWS-1:0] board_b_r;
+
+    logic uart_rd_d;
 
     assign ready = (req == 0 && busy == 0) ? 1 : 0;
 
@@ -48,13 +50,15 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 	    row <= 0;
 	    index <= 0;
 	    target_a_r <= 0;
+	    uart_rd_d <= 1;
 	end else begin
+	    uart_rd_d <= uart_rd;
 	    case(state)
 		IDLE: begin
 		    if(req == 1) begin
 			busy <= 1;
 			error_flag <= 0; // 次のアクション開始でエラーフラグをリセット
-			state <= PROMPT;
+			state <= PROMPT0;
 			target_a_r <= target_a;
 			board_a_r <= board_a;
 			board_b_r <= board_b;
@@ -62,8 +66,9 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 			busy <= 0;
 		    end
 		    valid <= 0;
+		    uart_wr <= 0;
 		end
-		PROMPT: begin
+		PROMPT0: begin
 		    if(uart_ready == 1) begin
 			uart_wr <= 1;
 			uart_d <= 8'h3f; // '?'
@@ -74,7 +79,7 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 		end
 		RECV0: begin
 		    uart_wr <= 0;
-		    if(uart_rd == 1) begin
+		    if(uart_rd == 1 && uart_rd_d == 0) begin
 			if(uart_q < 8'h30 || 8'h32 < uart_q) begin
 			    // 入力文字列が0-2の範囲外なのでエラー
 			    valid <= 1;
@@ -82,12 +87,22 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 			    state <= IDLE;
 			end else begin
 			    col <= uart_q - 8'h30;
-			    state <= RECV1;
+			    state <= PROMPT1;
 			end
 		    end
 		end
+		PROMPT1: begin
+		    if(uart_ready == 1) begin
+			uart_wr <= 1;
+			uart_d <= 8'h3f; // '?'
+			state <= RECV1;
+		    end else begin
+			uart_wr <= 0;
+		    end
+		end
 		RECV1: begin
-		    if(uart_rd == 1) begin
+		    uart_wr <= 0;
+		    if(uart_rd == 1 && uart_rd_d == 0) begin
 			if(uart_q < 8'h30 || 8'h32 < uart_q) begin
 			    // 入力文字列が0-2の範囲外なのでエラー
 			    valid <= 1;
@@ -117,7 +132,25 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 			error_flag <= 1; // エラーフラグをたてる
 		    end
 		    valid <= 1; // 結果確定フラグを立てる
-		    state <= IDLE;
+		    state <= CR;
+		end
+		CR: begin
+		    if(uart_ready == 1) begin
+			uart_wr <= 1;
+			uart_d <= 8'h0d; // '\r'
+			state <= LF;
+		    end else begin
+			uart_wr <= 0;
+		    end
+		end
+		LF: begin
+		    if(uart_ready == 1) begin
+			uart_wr <= 1;
+			uart_d <= 8'h0a; // '\n'
+			state <= IDLE;
+		    end else begin
+			uart_wr <= 0;
+		    end
 		end
 		default: begin
 		    state <= IDLE;

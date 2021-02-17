@@ -43,8 +43,8 @@ module uart_rx
 		if (receiving == 0) begin // 受信中でない場合
 		    if (din == 0) begin // スタートビット0を受信したら
 			receiving <= 1;
+			rd <= 0; // 受信完了のフラグをさげる
 		    end
-		    rd <= 0; // 受信完了のフラグをさげる
 		end else begin // 受信中の場合
 		    case (cbit) // カウンタに合わせてデータをラッチ
 			6: begin // スタートビットのチェック
