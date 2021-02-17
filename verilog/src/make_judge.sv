@@ -42,6 +42,9 @@ module make_judge#(parameter ROWS = 3, parameter COLS = 3)
 	    state <= IDLE;
 	    busy <= 1;
 	    valid <= 0;
+	    end_of_game <= 0;
+	    win_a <= 0;
+	    win_b <= 0;
 	end else begin
 	    case(state)
 		IDLE: begin
@@ -73,12 +76,13 @@ module make_judge#(parameter ROWS = 3, parameter COLS = 3)
 			end_of_game <= 1;
 		    end else begin
 			win_a <= 0;
-			win_b <= 1;
+			win_b <= 0;
 			end_of_game <= 0;
 		    end
 		end
 		EMIT: begin
 		    valid <= 1;
+		    busy <= 0;
 		    state <= IDLE;
 		end
 		default: begin

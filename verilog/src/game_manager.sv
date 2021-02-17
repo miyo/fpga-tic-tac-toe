@@ -3,7 +3,7 @@
 
 `default_nettype none
 
-module game_manager
+module game_manager#(parameter ROWS=3, parameter COLS=3)
   (
    input wire clk,
    input wire reset,
@@ -15,12 +15,26 @@ module game_manager
    input wire make_turn_ready,
    output reg recv_req,
    input wire recv_ready,
+   input wire recv_error,
    output reg make_judge_req,
    input wire make_judge_ready,
    input wire end_of_game,
    input wire win_a,
-   input wire win_b
+   input wire win_b,
+   output wire [ROWS*COLS-1:0] board_a,
+   output wire [ROWS*COLS-1:0] board_b,
+   input wire [ROWS*COLS-1:0] make_turn_board_a,
+   input wire [ROWS*COLS-1:0] make_turn_board_b,
+   input wire [ROWS*COLS-1:0] recv_board_a,
+   input wire [ROWS*COLS-1:0] recv_board_b
    );
+
+    // 盤面を保持するレジスタ
+    logic [ROWS*COLS-1:0] cur_board_a;
+    logic [ROWS*COLS-1:0] cur_board_b;
+
+    assign board_a = cur_board_a;
+    assign board_b = cur_board_b;
 
     enum {IDLE,
 	  PRINT_BOARD, PRINT_BOARD_WAIT,
@@ -36,9 +50,12 @@ module game_manager
 	    state <= IDLE;
 	    post_state <= IDLE;
 	    kick_game_d <= 1;
-	    print_board_wr <= 1;
+	    print_board_wr <= 0;
 	    make_turn_req <= 0;
+	    recv_req <= 0;
 	    make_judge_req <= 0;
+	    cur_board_a <= 0;
+	    cur_board_b <= 0;
 	end else begin
 	    kick_game_d <= kick_game;
 	    case(state)
@@ -51,7 +68,12 @@ module game_manager
 			    post_state <= OPPOSITE_TURN; // 先攻がユーザ
 			end
 		    end
-		    print_board_wr <= 1;
+		    print_board_wr <= 0;
+		    make_turn_req <= 0;
+		    recv_req <= 0;
+		    make_judge_req <= 0;
+		    cur_board_a <= 0;
+		    cur_board_b <= 0;
 		end
 
 		PRINT_BOARD: begin
@@ -101,6 +123,8 @@ module game_manager
 		    if(make_turn_ready == 1) begin
 			state <= PRINT_BOARD;
 			post_state <= OPPOSITE_TURN;
+			cur_board_a <= make_turn_board_a;
+			cur_board_b <= make_turn_board_b;
 		    end
 		end
 
@@ -114,9 +138,15 @@ module game_manager
 		end
 		OPPOSITE_TURN_WAIT: begin
 		    recv_req <= 0;
-		    if(make_turn_ready == 1) begin
-			state <= PRINT_BOARD;
-			post_state <= MY_TURN;
+		    if(recv_ready == 1) begin
+			if(recv_error == 1) begin
+			    state <= OPPOSITE_TURN;
+			end else begin
+			    state <= PRINT_BOARD;
+			    post_state <= MY_TURN;
+			    cur_board_a <= recv_board_a;
+			    cur_board_b <= recv_board_b;
+			end
 		    end
 		end
 
@@ -124,9 +154,12 @@ module game_manager
 		    state <= IDLE;
 		    post_state <= IDLE;
 		    kick_game_d <= 1;
-		    print_board_wr <= 1;
+		    print_board_wr <= 0;
 		    make_turn_req <= 0;
+		    recv_req <= 0;
 		    make_judge_req <= 0;
+		    cur_board_a <= 0;
+		    cur_board_b <= 0;
 		end
 
 	    endcase // case (state)

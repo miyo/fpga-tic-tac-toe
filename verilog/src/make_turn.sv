@@ -25,6 +25,7 @@ module make_turn#(parameter ROWS = 3, parameter COLS = 3)
     logic target_a_r;
 
     logic [31:0] pt;
+    logic [ROWS*COLS-1:0] mask;
     
     assign ready = (req == 0 && busy == 0) ? 1 : 0;
 
@@ -34,6 +35,13 @@ module make_turn#(parameter ROWS = 3, parameter COLS = 3)
 	    state <= IDLE;
 	    pt <= 0;
 	    error <= 0;
+	    valid <= 0;
+	    board_a_out <= 0;
+	    board_b_out <= 0;
+	    board_a_r <= 0;
+	    board_b_r <= 0;
+	    target_a_r <= 0;
+	    mask <= 1;
 	end else begin
 	    case(state)
 		IDLE: begin
@@ -45,6 +53,8 @@ module make_turn#(parameter ROWS = 3, parameter COLS = 3)
 			pt <= 0;
 			error <= 0;
 			pt <= 0; // 愚直に0から探す
+			mask <= 1; // 0から探すので0...01が初期値
+			state <= CHECK;
 		    end else begin
 			busy <= 0;
 		    end
@@ -53,9 +63,9 @@ module make_turn#(parameter ROWS = 3, parameter COLS = 3)
 		CHECK: begin
 		    if(board_a_r[pt] == 0 && board_b_r[pt] == 0) begin
 			if(target_a_r == 1) begin
-			    board_a_r[pt] <= 1;
+			    board_a_r <= board_a_r | mask;
 			end else begin
-			    board_a_r[pt] <= 0;
+			    board_b_r <= board_b_r | mask;
 			end
 			state <= EMIT;
 		    end else begin
@@ -65,6 +75,7 @@ module make_turn#(parameter ROWS = 3, parameter COLS = 3)
 			    state <= EMIT;
 			end else begin
 			    pt <= pt + 1; // 次の候補を試してみる
+			    mask <= {mask[ROWS*COLS-1-1:0],1'b0}; // 次の手は左シフトで得る
 			end
 		    end
 		end
@@ -72,6 +83,7 @@ module make_turn#(parameter ROWS = 3, parameter COLS = 3)
 		    board_a_out <= board_a_r;
 		    board_b_out <= board_b_r;
 		    valid <= 1;
+		    busy <= 0;
 		    state <= IDLE;
 		end
 		default: begin

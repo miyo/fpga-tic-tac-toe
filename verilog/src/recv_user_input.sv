@@ -41,6 +41,13 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 	    valid <= 0;
 	    error_flag <= 0;
 	    uart_wr <= 0;
+	    board_a_r <= 0;
+	    board_b_r <= 0;
+	    uart_d <= 0;
+	    col <= 0;
+	    row <= 0;
+	    index <= 0;
+	    target_a_r <= 0;
 	end else begin
 	    case(state)
 		IDLE: begin
@@ -93,7 +100,7 @@ module recv_user_input#(parameter ROWS = 3, parameter COLS = 3)
 		    end
 		end
 		GET_INDEX: begin
-		    index <= row * 3 + col;
+		    index <= row * COLS + col;
 		    state <= EMIT;
 		end
 		EMIT: begin

@@ -25,49 +25,49 @@ module main
     logic my_target_a = 1;
 
     // 盤面を保持するレジスタ
-    logic [ROWS*COLS-1:0] board_a;
-    logic [ROWS*COLS-1:0] board_b;
+    wire [ROWS*COLS-1:0] board_a;
+    wire [ROWS*COLS-1:0] board_b;
 
     // UART入出力
-    logic [7:0] uart_din;
-    logic uart_wr;
-    logic uart_ready;
-    logic [7:0] uart_q;
-    logic uart_rd;
+    wire [7:0] uart_din;
+    wire uart_wr;
+    wire uart_ready;
+    wire [7:0] uart_q;
+    wire uart_rd;
 
     // 盤面表示モジュール用
-    logic print_board_wr;
-    logic print_board_ready;
-    logic print_board_uart_wr;
-    logic [7:0] print_board_uart_din;
+    wire print_board_wr;
+    wire print_board_ready;
+    wire print_board_uart_wr;
+    wire [7:0] print_board_uart_din;
 
     // ユーザ入力受付モジュールとの接続
-    logic recv_req;
-    logic recv_target_a;
-    logic [ROWS*COLS-1:0] recv_board_a;
-    logic [ROWS*COLS-1:0] recv_board_b;
-    logic recv_ready;
-    logic recv_error;
-    logic recv_valid;
-    logic recv_uart_wr;
-    logic [7:0] recv_uart_din;
+    wire recv_req;
+    wire recv_target_a;
+    wire [ROWS*COLS-1:0] recv_board_a;
+    wire [ROWS*COLS-1:0] recv_board_b;
+    wire recv_ready;
+    wire recv_error;
+    wire recv_valid;
+    wire recv_uart_wr;
+    wire [7:0] recv_uart_din;
 
     // 手を決めるモジュールとの接続
-    logic make_turn_req;
-    logic make_turn_ready;
-    logic make_turn_target_a;
-    logic [ROWS*COLS-1:0] make_turn_board_a;
-    logic [ROWS*COLS-1:0] make_turn_board_b;
-    logic make_turn_valid;
-    logic make_turn_error;
+    wire make_turn_req;
+    wire make_turn_ready;
+    wire make_turn_target_a;
+    wire [ROWS*COLS-1:0] make_turn_board_a;
+    wire [ROWS*COLS-1:0] make_turn_board_b;
+    wire make_turn_valid;
+    wire make_turn_error;
 
     // 盤面の終了判定をするモジュールとの接続
-    logic make_judge_req;
-    logic make_judge_ready;
-    logic make_judge_valid;
-    logic make_judge_end_of_game;
-    logic make_judge_win_a;
-    logic make_judge_win_b;
+    wire make_judge_req;
+    wire make_judge_ready;
+    wire make_judge_valid;
+    wire make_judge_end_of_game;
+    wire make_judge_win_a;
+    wire make_judge_win_b;
 
     /////////////////////////////////////////////////////////////////////////
     // システムクロックの生成
@@ -121,22 +121,30 @@ module main
     /////////////////////////////////////////////////////////////////////////
     // ゲームの進行を管理するモジュールのインスタンス生成
     /////////////////////////////////////////////////////////////////////////
-    game_manager game_manager_i(
-		 .clk(sysclk),
-		 .reset(sysrst),
-		 .kick_game(kick_game),
-		 .my_target_a(my_target_a),
-		 .print_board_wr(print_board_wr),
-		 .print_board_ready(print_board_ready),
-		 .make_turn_req(make_turn_req),
-		 .make_turn_ready(make_turn_ready),
-		 .recv_req(recv_req),
-		 .recv_ready(recv_ready),
-		 .make_judge_req(make_judge_req),
-		 .make_judge_ready(make_judge_ready),
-		 .end_of_game(make_judge_end_of_game),
-		 .win_a(make_judge_win_a),
-		 .win_b(make_judge_win_b)
+    game_manager#(.ROWS(ROWS), .COLS(COLS))
+    game_manager_i(
+		   .clk(sysclk),
+		   .reset(sysrst),
+		   .kick_game(kick_game),
+		   .my_target_a(my_target_a),
+		   .print_board_wr(print_board_wr),
+		   .print_board_ready(print_board_ready),
+		   .make_turn_req(make_turn_req),
+		   .make_turn_ready(make_turn_ready),
+		   .recv_req(recv_req),
+		   .recv_ready(recv_ready),
+		   .recv_error(recv_error),
+		   .make_judge_req(make_judge_req),
+		   .make_judge_ready(make_judge_ready),
+		   .end_of_game(make_judge_end_of_game),
+		   .win_a(make_judge_win_a),
+		   .win_b(make_judge_win_b),
+		   .board_a(board_a),
+		   .board_b(board_b),
+		   .make_turn_board_a(make_turn_board_a),
+		   .make_turn_board_b(make_turn_board_b),
+		   .recv_board_a(recv_board_a),
+		   .recv_board_b(recv_board_b)
 		 );
 
     /////////////////////////////////////////////////////////////////////////

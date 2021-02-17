@@ -23,7 +23,8 @@ module print_board_tb();
 	board_b = 9'b010101010;
 	#100 reset <= 0;
 	#200 wr = 1;
-	#210 wr = 0;
+	#10 wr = 0;
+	#100000000 $finish;
     end
     always begin
 	#5 clk <= ~clk;
