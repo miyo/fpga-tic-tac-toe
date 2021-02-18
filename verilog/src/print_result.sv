@@ -47,7 +47,7 @@ module print_result
     logic busy;
     logic [15:0] mesg_index;
 
-    assign ready = (busy == 0 || req == 0) ? 1 : 0;
+    assign ready = (busy == 0 && req == 0) ? 1 : 0;
 
     always @(posedge clk) begin
 	if(reset == 1) begin
