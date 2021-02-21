@@ -28,6 +28,10 @@ module game_manager_tb();
     logic [ROWS*COLS-1:0] make_turn_board_b;
     logic [ROWS*COLS-1:0] recv_board_a;
     logic [ROWS*COLS-1:0] recv_board_b;
+    logic print_result_req;
+    logic print_result_ready;
+    logic print_result_win_a;
+    logic print_result_win_b;
 
     initial begin
 	clk = 0;
@@ -36,6 +40,7 @@ module game_manager_tb();
 	my_target_a = 1;
 	print_board_ready = 1;
 	make_turn_ready = 1;
+	print_result_ready = 1;
 	recv_ready = 1;
 	recv_error = 0;
 	make_judge_ready = 1;
@@ -45,7 +50,7 @@ module game_manager_tb();
 	recv_board_b = 0;
 	end_of_game = 0;
 	win_a = 0;
-	win_b = 0;
+	win_b = 1;
 	#100;
 	reset = 0;
 	#20;
@@ -82,7 +87,11 @@ module game_manager_tb();
 		   .make_turn_board_a(make_turn_board_a),
 		   .make_turn_board_b(make_turn_board_b),
 		   .recv_board_a(recv_board_a),
-		   .recv_board_b(recv_board_b)
+		   .recv_board_b(recv_board_b),
+		   .print_result_req(print_result_req),
+		   .print_result_ready(print_result_ready),
+		   .print_result_win_a(print_result_win_a),
+		   .print_result_win_b(print_result_win_b)
 		   );
 
 endmodule // game_manager_tb

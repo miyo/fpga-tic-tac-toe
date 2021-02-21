@@ -69,6 +69,14 @@ module main
     wire make_judge_win_a;
     wire make_judge_win_b;
 
+    // 結果を表示するモジュールとの接続
+    wire print_result_req;
+    wire print_result_ready;
+    wire print_result_win_a;
+    wire print_result_win_b;
+    wire print_result_uart_wr;
+    wire [7:0] print_result_uart_d;
+
     /////////////////////////////////////////////////////////////////////////
     // システムクロックの生成
     // cf. https://www.acri.c.titech.ac.jp/wordpress/archives/45
@@ -111,12 +119,12 @@ module main
     /////////////////////////////////////////////////////////////////////////
     // UART文字出力モジュールを排他的に利用するため
     /////////////////////////////////////////////////////////////////////////
-    assign uart_wr = print_board_uart_wr || recv_uart_wr;
-    assign uart_din = recv_uart_wr == 1 ? recv_uart_din :
-		      print_board_uart_wr == 1 ? print_board_uart_din :
+    assign uart_wr = print_board_uart_wr | recv_uart_wr | print_result_uart_wr;
+    assign uart_din = print_result_uart_wr == 1 ? print_result_uart_d :
+		      recv_uart_wr == 1         ? recv_uart_din :
+		      print_board_uart_wr == 1  ? print_board_uart_din :
 		      0;
     /////////////////////////////////////////////////////////////////////////
-    
 
     /////////////////////////////////////////////////////////////////////////
     // ゲームの進行を管理するモジュールのインスタンス生成
@@ -144,7 +152,11 @@ module main
 		   .make_turn_board_a(make_turn_board_a),
 		   .make_turn_board_b(make_turn_board_b),
 		   .recv_board_a(recv_board_a),
-		   .recv_board_b(recv_board_b)
+		   .recv_board_b(recv_board_b),
+		   .print_result_req(print_result_req),
+		   .print_result_ready(print_result_ready),
+		   .print_result_win_a(print_result_win_a),
+		   .print_result_win_b(print_result_win_b)
 		 );
 
     /////////////////////////////////////////////////////////////////////////
@@ -227,6 +239,21 @@ module main
 
 
     /////////////////////////////////////////////////////////////////////////
+    // ゲームの終了時のメッセージ表示モジュールのインスタンス生成
+    /////////////////////////////////////////////////////////////////////////
+    print_result print_result_i
+      (.clk(sysclk),
+       .reset(sysrst),
+       .req(print_result_req),
+       .ready(print_result_ready),
+       .win_a(print_result_win_a),
+       .win_b(print_result_win_b),
+       .uart_wr(print_result_uart_wr),
+       .uart_d(print_result_uart_d),
+       .uart_ready(uart_ready)
+       );
+
+    /////////////////////////////////////////////////////////////////////////
     // FPGAが動いていることを確認するためのカウンタ
     /////////////////////////////////////////////////////////////////////////
     (* KEEP *) logic [31:0] heart_beat_counter = 0;
@@ -241,14 +268,21 @@ module main
     assign LED = heart_beat_counter[27:24];
     /////////////////////////////////////////////////////////////////////////
 
-
     /////////////////////////////////////////////////////////////////////////
-    // 実機がなくてもILAで確認できるようvioにつないでおく
+    // ゲームの開始とFPGAボード動作確認カウンタの確認用のvio
     // cf. https://www.acri.c.titech.ac.jp/wordpress/archives/43
     /////////////////////////////////////////////////////////////////////////
     vio_0 vio_0_i(.clk(sysclk),
 		  .probe_in0(heart_beat_counter[31:24]),
 		  .probe_out0({kick_game})
+		  );
+    /////////////////////////////////////////////////////////////////////////
+    
+    /////////////////////////////////////////////////////////////////////////
+    // VIOではスナップショットな値が見えるがILAだと信号の変化を観察できる
+    /////////////////////////////////////////////////////////////////////////
+    ila_0 ila_0_i(.clk(sysclk),
+		  .probe0(heart_beat_counter)
 		  );
     /////////////////////////////////////////////////////////////////////////
 

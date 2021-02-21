@@ -26,7 +26,11 @@ module game_manager#(parameter ROWS=3, parameter COLS=3)
    input wire [ROWS*COLS-1:0] make_turn_board_a,
    input wire [ROWS*COLS-1:0] make_turn_board_b,
    input wire [ROWS*COLS-1:0] recv_board_a,
-   input wire [ROWS*COLS-1:0] recv_board_b
+   input wire [ROWS*COLS-1:0] recv_board_b,
+   output reg print_result_req,
+   input wire print_result_ready,
+   output reg print_result_win_a,
+   output reg print_result_win_b
    );
 
     // 盤面を保持するレジスタ
@@ -40,8 +44,9 @@ module game_manager#(parameter ROWS=3, parameter COLS=3)
 	  PRINT_BOARD, PRINT_BOARD_WAIT,
 	  JUDGE_BOARD, JUDGE_BOARD_WAIT,
 	  MY_TURN, MY_TURN_WAIT,
-	  OPPOSITE_TURN, OPPOSITE_TURN_WAIT}
-	 state, post_state;
+	  OPPOSITE_TURN, OPPOSITE_TURN_WAIT,
+	  PRINT_RESULT, PRINT_RESULT_WAIT
+	  } state, post_state;
 
     logic kick_game_d;
 
@@ -56,6 +61,9 @@ module game_manager#(parameter ROWS=3, parameter COLS=3)
 	    make_judge_req <= 0;
 	    cur_board_a <= 0;
 	    cur_board_b <= 0;
+	    print_result_req <= 0;
+	    print_result_win_a <= 0;
+	    print_result_win_b <= 0;
 	end else begin
 	    kick_game_d <= kick_game;
 	    case(state)
@@ -72,6 +80,7 @@ module game_manager#(parameter ROWS=3, parameter COLS=3)
 		    make_turn_req <= 0;
 		    recv_req <= 0;
 		    make_judge_req <= 0;
+		    print_result_req <= 0;
 		    cur_board_a <= 0;
 		    cur_board_b <= 0;
 		end
@@ -103,7 +112,9 @@ module game_manager#(parameter ROWS=3, parameter COLS=3)
 		    make_judge_req <= 0;
 		    if(make_judge_ready == 1) begin
 			if(end_of_game == 1) begin
-			    state <= IDLE;
+			    state <= PRINT_RESULT;
+			    print_result_win_a <= win_a;
+			    print_result_win_b <= win_b;
 			end else begin
 			    state <= post_state;
 			end
@@ -150,6 +161,21 @@ module game_manager#(parameter ROWS=3, parameter COLS=3)
 		    end
 		end
 
+		PRINT_RESULT: begin
+		    if(print_result_ready == 1) begin
+			print_result_req <= 1;
+			state <= PRINT_RESULT_WAIT;
+		    end else begin
+			print_result_req <= 0;
+		    end
+		end
+		PRINT_RESULT_WAIT: begin
+		    print_result_req <= 0;
+		    if(print_result_ready == 1) begin
+			state <= IDLE;
+		    end
+		end
+
 		default: begin
 		    state <= IDLE;
 		    post_state <= IDLE;
@@ -158,6 +184,7 @@ module game_manager#(parameter ROWS=3, parameter COLS=3)
 		    make_turn_req <= 0;
 		    recv_req <= 0;
 		    make_judge_req <= 0;
+		    print_result_req <= 0;
 		    cur_board_a <= 0;
 		    cur_board_b <= 0;
 		end
