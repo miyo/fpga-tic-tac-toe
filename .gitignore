@@ -1,1 +1,9 @@
 *~
+*.log
+*.jou
+*.str
+.Xil
+.analytics
+.metadata
+RemoteSystemsTempFiles
+design_1_wrapper
