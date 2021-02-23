@@ -19,6 +19,8 @@ vivado &
 
 ![open_vivado](./docs/open_vivado.png)
 
+Vivadoはメニューの`File`->`Exit`やウィンドウの閉じるボタンで終了することができます．
+
 ## プロジェクトの作成
 
 Vivadoではプロジェクトという単位で設計します．新しいデザインを作る場合にはプロジェクトの作成からはじめます．
@@ -44,6 +46,8 @@ Vivado起動ウィンドウの `Quick Start` の中にある `Create Project > `
 プロジェクトが作成できました．
 
 ![create_project_5](./docs/create_project_5.png)
+
+Vivadoではプロジェクトを明示的に保存する必要はありません．Vivadoを終了した後で，プロジェクトを再開したい場合は，起動ウィンドウの`Quick Start`にある`Open Project`をクリックするか，メニューバーの`File`->`Project`->`Open...`を選択してファイル選択ダイアログを開き，プロジェクトファイル(拡張子が`.xpr`)を選択しましょう．
 
 ## ソースコードの追加
 
