@@ -25,25 +25,25 @@ Vivadoではプロジェクトという単位で設計します．新しいデ�
 
 Vivado起動ウィンドウの `Quick Start` の中にある `Create Project > `をクリックすると`New Project`ウィザードがはじまります．
 
-![create_project_1](./docs/create_project1.png)
+![create_project_1](./docs/create_project_1.png)
 
 `Next >`をクリックすると，最初にプロジェクト名と格納先ディレクトリの設定を求められます．ここでは，`$WORK/fpga-tic-toc-toe-main`の下に`project_rtl`という名前のプロジェクトを作成するように設定してみました．
 
-![create_project_2](./docs/create_project2.png)
+![create_project_2](./docs/create_project_2.png)
 
 `Next >`をクリックするとデザインソースなどに関する設定ダイアログが開きますが，後で設定することにして`Default Part`ダイアログまで`Next >`でスキップします．
 
 `Default Part`では使うFPGAを設定します．ここでは，ACRiに設置されているArtyを利用しますので，(1)`Boards`タブを選択し，(2)Searchフィールドにartyと入力，(3)でてきたArtyを選択します．
 
-![create_project_3](./docs/create_project3.png)
+![create_project_3](./docs/create_project_3.png)
 
 `Default Part`でartyを選択後`Next >`をクリックするとプロジェクト作成ダイアログはおしまいです．内容を確認して`Finish`でウィザードを終了します．
 
-![create_project_4](./docs/create_project4.png)
+![create_project_4](./docs/create_project_4.png)
 
 プロジェクトが作成できました．
 
-![create_project_5](./docs/create_project5.png)
+![create_project_5](./docs/create_project_5.png)
 
 ## ソースコードの追加
 
