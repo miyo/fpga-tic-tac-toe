@@ -2,6 +2,8 @@
 
 Vivadoを使ったFPGA開発の流れを体験してみましょう．
 
+文中の`$WORK`は，アーカイブを展開したディレクトリ(たとえば`$HOME/work`)を想定します．
+
 ## Vivadoの起動
 
 リモートデスクトップを使ってACRiにログインしてターミナルを開きます．
@@ -29,7 +31,7 @@ Vivado起動ウィンドウの `Quick Start` の中にある `Create Project > `
 
 ![create_project_1](./docs/create_project_1.png)
 
-`Next >`をクリックすると，最初にプロジェクト名と格納先ディレクトリの設定を求められます．ここでは，`$WORK/fpga-tic-toc-toe-main`の下に`project_rtl`という名前のプロジェクトを作成するように設定してみました．
+`Next >`をクリックすると，最初にプロジェクト名と格納先ディレクトリの設定を求められます．ここでは，`$WORK/fpga-tic-tac-toe-main`の下に`project_rtl`という名前のプロジェクトを作成するように設定してみました．
 
 ![create_project_2](./docs/create_project_2.png)
 
