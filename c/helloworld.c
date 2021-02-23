@@ -18,22 +18,30 @@ int make_turn(int rows, int cols, int board_a, int board_b, int turn_a){
 	}
 }
 
-int recv_turn(int rows, int cols, int board_a, int board_b, int turn_a){
+int recv_turn_prim(int num){
 	int c;
-	int col, row;
 	do{
 		print("?");
-		setvbuf(stdin, NULL, _IONBF, 0);
 		c = getchar();
-	}while(c < 0x30 || (0x30+cols) < c);
-	col = c - 0x30;
-	do{
-		print("?");
-		setvbuf(stdin, NULL, _IONBF, 0);
-		c = getchar();
-	}while(c < 0x30 || (0x30+rows) < c);
-	row = c - 0x30;
-	int id = row*cols + col;
+	}while(c < '0' || ('0'+num) < c);
+	return c - '0';
+}
+
+int recv_turn_id(int rows, int cols){
+	int col = recv_turn_prim(cols);
+	int row = recv_turn_prim(rows);
+	return row * cols + col;
+}
+
+int recv_turn(int rows, int cols, int board_a, int board_b, int turn_a){
+	int id = 0;
+	for(;;){
+		id = recv_turn_id(rows, cols);
+		print("\r\n");
+		if(((board_a | board_b) & (1 << id)) == 0){
+			break;
+		}
+	}
 	if(turn_a){
 		return board_a | (1 << id);
 	}else{
@@ -149,6 +157,7 @@ void game_manager(){
 int main()
 {
     init_platform();
+	setvbuf(stdin, NULL, _IONBF, 0);
 
     game_manager();
 
