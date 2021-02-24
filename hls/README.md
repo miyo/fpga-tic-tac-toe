@@ -207,7 +207,7 @@ Vitis HLSで作成したコード以外を登録します．大部分は[RTL編]
 
 ![create_project_hls](./docs/create_project_hls_3.png)
 
-IPコアも追加します．`Sources`ペインの`+`をクリックして，`Add Sources`ダイアログを開きます．`Add or create constraints`にチェックを入れて`Next >`をクリックします．`Add Files`をクリックして以下のファイルを選択して`Finish`でダイアログを閉じます．
+IPコアも追加します．`Sources`ペインの`+`をクリックして，`Add Sources`ダイアログを開きます．`Add or create design sources`にチェックを入れて`Next >`をクリックします．`Add Files`をクリックして以下のファイルを選択して`Finish`でダイアログを閉じます．
 
 - `$WORK/fpga-tic-tac-toe-main/verilog/ipcores/clk_wiz_0/clk_wiz_0.xci`
 - `$WORK/fpga-tic-tac-toe-main/verilog/ipcores/vio_0/vio_0.xci`
